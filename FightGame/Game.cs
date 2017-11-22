@@ -34,6 +34,8 @@ namespace FightGame
             };
         }
 
+        // cambio chorra
+
         public void Start()
         {
             Console.Write(@"___________.__       .__     __      ________                       

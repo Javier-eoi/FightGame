@@ -7,6 +7,10 @@ namespace FightGame
         Male,
         Female
     }
+
+
+    // cambios chorra 
+
     public class Player
     {
         public Guid Id { get; set; }
