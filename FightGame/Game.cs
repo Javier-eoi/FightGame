@@ -35,6 +35,7 @@ namespace FightGame
         }
 
         // cambio chorra
+        // tonta
 
         public void Start()
         {
