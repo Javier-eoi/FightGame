@@ -50,8 +50,8 @@ namespace FightGame
             var players= people.results.Select(person => new Player
             {
                 Id = ++Game.LastId,
-                Name = person.name,
-                Gender = person.gender == "male" ? Gender.Male : Gender.Female,
+                Name = person.PlayerName,
+                Gender = person.PlayerGender == "male" ? Gender.Male : Gender.Female,
                 Power = Game.DefaultPower,
                 Lives = Game.DefaultLives
             });
