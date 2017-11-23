@@ -56,6 +56,7 @@ namespace FightGame
                 Lives = Game.DefaultLives
             });
             return players.ToList();
+
         }
     }
 
