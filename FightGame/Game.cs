@@ -9,11 +9,11 @@ namespace FightGame
     {
         public const int DefaultLives = 2;
         public const int DefaultPower = 10;
-
+        public static int LastId = 0;
         public List<Player> Players { get; set; }
 
         private Random _random = new Random();
-        private int _lastId = 0;
+        
 
         public Game()
         {
@@ -27,41 +27,8 @@ namespace FightGame
 
 
 
-            Players = new List<Player>
-            {
-                new Player
-                {
-                    Id = ++_lastId,
-                    Name = "Iron man",
-                    Gender = Gender.Male,
-                    Lives = DefaultLives,
-                    Power = DefaultPower
-                },
-                new Player
-                {
-                    Id = ++_lastId,
-                    Name = "Black Widow",
-                    Gender = Gender.Female,
-                    Lives = DefaultLives,
-                    Power = DefaultPower
-                },
-                new Player
-                {
-                    Id = ++_lastId,
-                    Name = "Hulk",
-                    Gender = Gender.Male,
-                    Lives = DefaultLives,
-                    Power = DefaultPower
-                },
-                new Player
-                {
-                    Id = ++_lastId,
-                    Name = "Thor",
-                    Gender = Gender.Male,
-                    Lives = DefaultLives,
-                    Power = DefaultPower
-                },
-            };
+            IPlayerService playerService = new ApiPlayerService();
+            Players = playerService.GetPlayers();
         }
 
         public void Run()
@@ -147,7 +114,7 @@ namespace FightGame
 
             var player = new Player
             {
-                Id = ++_lastId,
+                Id = ++Game.LastId,
                 Gender = gender.Value,
                 Name = name,
                 Power = DefaultPower,
@@ -247,8 +214,8 @@ namespace FightGame
             }
             else
             {
-                Console.WriteLine($"\nNombre\t\t\tId\tVidas\tPoder\tGemas\tSexo");
-                Console.WriteLine($"--------------------------------------------------------");
+                Console.WriteLine($"\nNombre\t\t\t\t\t\tId\tVidas\tPoder\tGemas\tSexo");
+                Console.WriteLine($"---------------------------------------------------------------------------------------");
 
                 var ordered = Players
                     .OrderByDescending(x => x.Lives)
