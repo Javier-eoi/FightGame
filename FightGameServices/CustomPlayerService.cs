@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FightGame.Model;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,11 +50,11 @@ namespace FightGame
             // 2: Convertir List<Person> en nuestro List<Player> con LINQ
             var players= people.results.Select(person => new Player
             {
-                Id = ++Game.LastId,
+                Id = ++GameModel.LastId,
                 Name = person.PlayerName,
                 Gender = person.PlayerGender == "male" ? Gender.Male : Gender.Female,
-                Power = Game.DefaultPower,
-                Lives = Game.DefaultLives
+                Power = GameModel.DefaultPower,
+                Lives = GameModel.DefaultLives
             });
             return players.ToList();
 
@@ -68,35 +69,35 @@ namespace FightGame
             {
                 new Player
                 {
-                    Id = ++Game.LastId,
+                    Id = ++GameModel.LastId,
                     Name = "Iron man",
                     Gender = Gender.Male,
-                    Lives = Game.DefaultLives,
-                    Power = Game.DefaultPower
+                    Lives = GameModel.DefaultLives,
+                    Power = GameModel.DefaultPower
                 },
                 new Player
                 {
-                    Id = ++Game.LastId,
+                    Id = ++GameModel.LastId,
                     Name = "Black Widow",
                     Gender = Gender.Female,
-                    Lives = Game.DefaultLives,
-                    Power = Game.DefaultPower
+                    Lives = GameModel.DefaultLives,
+                    Power = GameModel.DefaultPower
                 },
                 new Player
                 {
-                    Id = ++Game.LastId,
+                    Id = ++GameModel.LastId,
                     Name = "Hulk",
                     Gender = Gender.Male,
-                    Lives = Game.DefaultLives,
-                    Power = Game.DefaultPower
+                    Lives = GameModel.DefaultLives,
+                    Power = GameModel.DefaultPower
                 },
                 new Player
                 {
-                    Id = ++Game.LastId,
+                    Id = ++GameModel.LastId,
                     Name = "Thor",
                     Gender = Gender.Male,
-                    Lives = Game.DefaultLives,
-                    Power = Game.DefaultPower
+                    Lives = GameModel.DefaultLives,
+                    Power = GameModel.DefaultPower
                 },
             };
         }
