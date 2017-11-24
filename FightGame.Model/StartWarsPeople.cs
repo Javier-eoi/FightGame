@@ -1,14 +1,14 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace FightGame
 {
-    public class StarWarsPeople
+    public class StartWarsPeople
     {
-        public List<Person> results { get; set; }
+        [JsonProperty("results")]
+        public List<Person> Results { get; set; }
     }
+
     public class Person
     {
         [JsonProperty("name")]
@@ -18,5 +18,3 @@ namespace FightGame
         public string PlayerGender { get; set; }
     }
 }
-
-

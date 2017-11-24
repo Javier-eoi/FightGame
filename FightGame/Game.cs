@@ -8,30 +8,26 @@ namespace FightGame
 {
     public class Game
     {
-        public List<Player> Players { get; set; }
+        private IPlayerService _playerService;
 
         private Random _random = new Random(DateTime.Now.Millisecond);
         
         public Game()
         {
+            // Generador de arte ascii: http://patorjk.com/software/taag/#p=display&f=Graffiti&t=Fight%20Game
 
-            Console.Write(@"___________.__       .__     __      ________                       
-                            \_   _____/|__| ____ |  |___/  |_   /  _____/_____    _____   ____  
-                             |    __)  |  |/ ___\|  |  \   __\ /   \  ___\__  \  /     \_/ __ \ 
-                             |     \   |  / /_/  >   Y  \  |   \    \_\  \/ __ \|  Y Y  \  ___/ 
-                             \___  /   |__\___  /|___|  /__|    \______  (____  /__|_|  /\___  >
-                                 \/      /_____/      \/               \/     \/      \/     \/ by Javi", ConsoleColor.Blue);
+            ConsoleHelper.Write(@"___________.__       .__     __      ________                       
+\_   _____/|__| ____ |  |___/  |_   /  _____/_____    _____   ____  
+ |    __)  |  |/ ___\|  |  \   __\ /   \  ___\__  \  /     \_/ __ \ 
+ |     \   |  / /_/  >   Y  \  |   \    \_\  \/ __ \|  Y Y  \  ___/ 
+ \___  /   |__\___  /|___|  /__|    \______  (____  /__|_|  /\___  >
+     \/      /_____/      \/               \/     \/      \/     \/  by Diego", ConsoleColor.Cyan);
 
-
-
-            IPlayerService playerService = new ApiPlayerService();
-            Players = playerService.GetPlayers();
+            _playerService = new StarwarsPlayerService();
         }
 
         public void Run()
         {
-          
-
             Menu();
 
             while (true)
@@ -40,7 +36,7 @@ namespace FightGame
 
                 if (option.Key == ConsoleKey.Escape)
                 {
-                    Console.WriteLine("\n ¡Hasta luego!");
+                    Console.WriteLine("\n¡Hasta luego!");
                     Task.Run(async () => await Task.Delay(1500)).Wait();
                     break;
                 }
@@ -63,10 +59,9 @@ namespace FightGame
                         Fight();
                         break;
 
-                    case '4':
+                    case 'c':
                         Console.Clear();
                         break;
-
                 }
             }
         }
@@ -111,21 +106,20 @@ namespace FightGame
 
             var player = new Player
             {
-                Id = ++GameModel.LastId,
                 Gender = gender.Value,
                 Name = name,
                 Power = GameModel.DefaultPower,
                 Lives = GameModel.DefaultLives
             };
 
-            Players.Add(player);
+            _playerService.AddPlayer(player);
 
-            Console.WriteLine($"\n\n{player.Name} ha sido añadido:");
+            ConsoleHelper.Write($"\n{player.Name} ha sido añadido", ConsoleColor.Yellow);
         }
 
         public void Fight()
         {
-            var currentPlayers = Players
+            var currentPlayers = _playerService.GetPlayers()
                 .Where(x => x.Lives > 0)
                 .ToList();
 
@@ -141,7 +135,7 @@ namespace FightGame
             var player1 = currentPlayers[indexPlayer1];
 
             // elegir el segundo player aleatoriamente pero que no se repita
-            int indexPlayer2 = _random.Next(0, currentPlayers.Count); ;
+            int indexPlayer2 = _random.Next(0, currentPlayers.Count);
             while (indexPlayer1 == indexPlayer2)
                 indexPlayer2 = _random.Next(0, currentPlayers.Count);
 
@@ -151,7 +145,7 @@ namespace FightGame
             var damage = _random.Next(1, 5);
             player2.Power -= damage;
 
-            ConsoleHelper.Write($"==> {player1.Name} ha zurrado a {player2.Name}",
+            ConsoleHelper.Write($"==> {player1.Name} ha zurrado a {player2.Name}", 
                 ConsoleColor.Blue);
 
             if (player2.Power <= 0)
@@ -163,34 +157,34 @@ namespace FightGame
 
                 if (player2.Lives > 0)
                 {
-                    ConsoleHelper.Write($"{player2.Name} ha perdido una vida",
+                    ConsoleHelper.Write($"{player2.Name} ha perdido una vida", 
                         ConsoleColor.Yellow);
                 }
                 else
                 {
                     player2.Gems = 0;
-                    ConsoleHelper.Write($"{player2.Name} ha muerto",
+                    ConsoleHelper.Write($"{player2.Name} ha muerto", 
                         ConsoleColor.Red);
                 }
 
                 player1.Gems++;
 
                 ConsoleHelper.Write($"{player1.Name} ha ganado una gema. " +
-                    $"Ahora tiene {player1.Gems} en total.",
+                    $"Ahora tiene {player1.Gems} en total.", 
                     ConsoleColor.Green);
 
                 // cada 3 gemas le damos una vida
-                if (player1.Gems == 3  )
+                if (player1.Gems == 3)
                 {
                     player1.Lives++;
-                    player1.Gems -= 3;
+                    player1.Gems = 0;
 
                     ConsoleHelper.Write($"{player1.Name} ha ganado una VIDA!!",
                         ConsoleColor.Magenta);
                 }
 
                 // comprobar si hay ganador
-                if (Players.Count(x => x.Lives > 0) == 1)
+                if(_playerService.GetPlayers().Count(x => x.Lives > 0) == 1)
                 {
                     Console.WriteLine("\n\n+============================================+");
                     Console.WriteLine("+============================================+");
@@ -205,26 +199,28 @@ namespace FightGame
 
         public void Status()
         {
-            if (Players.Count == 0)
+            var players = _playerService.GetPlayers();
+
+            if (players.Count == 0)
             {
                 Console.WriteLine("\nNo hay jugadores");
             }
             else
             {
-                Console.WriteLine($"\nNombre\t\t\t\t\t\tId\tVidas\tPoder\tGemas\tSexo");
-                Console.WriteLine($"---------------------------------------------------------------------------------------");
-
-                var ordered = Players
-                    .OrderByDescending(x => x.Lives)
+                Console.WriteLine($"\n{"Nombre".PadRight(20)}\t\tId\tVidas\tPoder\tGemas\tSexo");
+                Console.WriteLine($"---------------------------------------------------------------------");
+                
+                var ordered = players
+                    .OrderByDescending(player => player.Lives)
                     .ThenByDescending(x => x.Power)
                     .ThenByDescending(x => x.Gems);
 
                 foreach (var player in ordered)
                 {
-                   var status = player.Status();
-                   var color = player.Lives > 0 ? ConsoleColor.White : ConsoleColor.Red;
+                    var status = player.Status();
+                    var color = player.Lives > 0 ? ConsoleColor.White : ConsoleColor.Red;
 
-                   ConsoleHelper.Write(status, color);
+                    ConsoleHelper.Write(status, color);
                 }
             }
         }

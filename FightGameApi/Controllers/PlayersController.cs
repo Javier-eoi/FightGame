@@ -1,32 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FightGame;
+using System;
 
 namespace FightGameApi.Controllers
 {
     [Route("api/[controller]")]
     public class PlayersController : Controller
     {
+        private IPlayerService _playerService;
+
+        public PlayersController(IPlayerService playerService)
+        {
+            _playerService = playerService;
+        }
+
         // GET api/players
         [HttpGet]
         public IEnumerable<Player> Get()
         {
-            var playerService = new CustomPlayerService();
-            return playerService.GetPlayers();
+            return _playerService.GetPlayers();
         }
 
         // GET api/players/5
         [HttpGet("{id}")]
-        public Player Get(int id)
+        public IActionResult Get(int id)
         {
-            var playerService = new CustomPlayerService();
-            var players = playerService.GetPlayers();
-
-            var player = players.FirstOrDefault(x => x.Id == id);
-            return player;
+            try
+            {
+                var player = _playerService.GetPlayerById(id);
+                return new ObjectResult(player);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return NotFound();
+            }
         }
 
         // POST api/players
@@ -41,7 +51,7 @@ namespace FightGameApi.Controllers
         {
         }
 
-        // DELETE api/values/5
+        // DELETE api/players/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
